@@ -1,0 +1,36 @@
+[
+  {
+    "raw": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+    "browser": { "family": "Chrome", "name": "Chrome", "version": {"major": 115, "minor": 0, "patch": 0} },
+    "os": { "name": "Windows", "version": {"major": 10, "minor": 0, "patch": 0} },
+    "device": { "type": "Desktop" },
+    "kind": "browser",
+    "platform": "windows"
+  },
+  {
+    "raw": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1",
+    "browser": { "family": "Safari", "name": "Safari", "version": {"major": 16, "minor": 5, "patch": 0} },
+    "os": { "name": "iOS", "version": {"major": 16, "minor": 5, "patch": 0} },
+    "device": { "type": "Mobile", "brand": "Apple", "name": "iPhone" },
+    "kind": "browser",
+    "platform": "ios"
+  },
+  {
+    "raw": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+    "bot": { "name": "Googlebot", "category": "Search Bot", "provider": "Google" },
+    "kind": "bot",
+    "platform": "unknown"
+  },
+  {
+    "raw": "curl/7.81.0",
+    "http_client": { "name": "curl" },
+    "kind": "library",
+    "platform": "unknown"
+  },
+  {
+    "raw": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",
+    "ai": { "name": "GPTBot", "provider": "OpenAI", "category": "Crawler" },
+    "kind": "ai",
+    "platform": "unknown"
+  }
+]

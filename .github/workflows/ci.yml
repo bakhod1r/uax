@@ -1,0 +1,156 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Branch behaviour differs between architectures, and this parser is
+        # full of branches, so both are exercised.
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          check-latest: true
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test ./...
+
+      # The invariants that used to live in the generator: every rule has a
+      # test, a priority, a confidence and exactly one match clause, and the
+      # categories stay ordered by descending priority.
+      - name: Rule database invariants
+        run: go test -v ./internal/table
+
+      - name: Test with the race detector
+        run: go test -race ./...
+
+      # The allocation budget is an assertion, not a report: losing it is a
+      # regression in a documented property of the design.
+      - name: Allocation budget
+        run: go test -run TestAllocationBudget -v .
+
+      # The framework adapters are separate modules so the library never
+      # inherits a web framework. Separate also means untested unless said so:
+      # a change to Client breaks them silently otherwise.
+      - name: Framework adapters
+        run: |
+          for m in middleware/gin middleware/echo middleware/fiber; do
+            echo "::group::$m"
+            (cd "$m" && go build ./... && go test ./...)
+            echo "::endgroup::"
+          done
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+
+      - name: gofmt
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "::error::not gofmt'd:"; echo "$unformatted"
+            exit 1
+          fi
+
+      # Pinned: .golangci.yml is a v2 configuration, and the v6 action defaults
+      # to installing a v1 binary, which rejects it with an unhelpful error.
+      - uses: golangci/golangci-lint-action@v7
+        with:
+          version: v2.12.2
+
+      # The library must stay dependency-free: it sits in every request, and a
+      # transitive dependency there is a supply-chain risk for every user. The
+      # module may still require things — cmd/uax uses a device catalogue — so
+      # this asks what the library package actually links, not what go.mod says.
+      - name: The library links nothing external
+        run: |
+          external=$(go list -deps . | grep -E '^[^/]+\.[^/]+/' | grep -v '^github.com/bakhod1r/uax' || true)
+          if [ -n "$external" ]; then
+            echo "::error::the library package gained a dependency:"; echo "$external"
+            exit 1
+          fi
+
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+
+      # A parser is a place where hostile input arrives by definition. It must
+      # never panic, whatever it is handed.
+      - name: Fuzz the parser
+        run: go test -fuzz=FuzzParse -fuzztime=60s -run=XXX .
+
+      - name: Fuzz the tokeniser
+        run: go test -fuzz=Fuzz -fuzztime=60s -run=XXX ./internal/scan
+
+      - name: Upload any crashers
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-crashers
+          path: testdata/fuzz
+
+  # uax.Release is hand-maintained, and a tag is immutable once the module
+  # proxy has fetched it. A tag that disagrees with the constant ships a binary
+  # that misreports its own version, and the fingerprint it prints alongside a
+  # classification stops meaning anything.
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+
+      - name: The tag matches uax.Release
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          got=$(go run ./cmd/uax version | head -1 | awk '{print $2}')
+          if [ "$tag" != "$got" ]; then
+            echo "::error::tag $GITHUB_REF_NAME says $tag, uax.Release says $got"
+            exit 1
+          fi
+
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+
+      - name: Benchmark
+        run: go test -run=XXX -bench=. -benchmem . | tee bench.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: benchmarks
+          path: bench.txt

@@ -1,0 +1,18 @@
+# Build and test output.
+*.test
+*.out
+bench.txt
+
+# Fuzzing corpora found by the machine, not by a person. Crashers worth keeping
+# are committed deliberately as regression cases under testdata/corpus.
+testdata/fuzz/
+
+# Coverage and profiling artefacts. Committing a coverage report freezes a
+# number that stops being true the moment anyone writes a test.
+*.out
+*.html
+coverage*.txt
+missing*.txt
+
+# The compiled CLI. `go install` builds it; the repository does not ship it.
+/uax
