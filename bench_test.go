@@ -94,6 +94,62 @@ func BenchmarkParseRequest(b *testing.B) {
 	}
 }
 
+// BenchmarkParseParallel is the shape the middleware actually runs in: one
+// parser, every request goroutine at once. A parser that shared mutable state
+// would show up here as contention long before it showed up as a race.
+func BenchmarkParseParallel(b *testing.B) {
+	p := New(Config{})
+
+	b.ReportAllocs()
+	b.RunParallel(func(pb *testing.PB) {
+		i := 0
+		for pb.Next() {
+			_ = p.Parse(benchInputs[i%len(benchInputs)].ua)
+			i++
+		}
+	})
+}
+
+// BenchmarkConsistency measures the coherence check on its own. It is the unit
+// the verdict is built from, so its cost is paid at least once by every caller
+// that asks for either.
+func BenchmarkConsistency(b *testing.B) {
+	for _, in := range benchInputs[:4] {
+		c := Parse(in.ua)
+		b.Run(in.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				_ = CheckConsistency(c)
+			}
+		})
+	}
+}
+
+// BenchmarkVerdict is why VerdictFrom exists.
+//
+// A verdict is derived from the consistency findings, so ComputeVerdict has to
+// run every spoof rule to produce one. A caller that shows the findings as well
+// — ParseRequest, the CLI, the MCP server — already has them, and the two
+// sub-benchmarks below are the difference between passing them in and making
+// the verdict recompute them.
+func BenchmarkVerdict(b *testing.B) {
+	c := Parse(benchInputs[0].ua)
+	cons := CheckConsistency(c)
+
+	b.Run("recomputed", func(b *testing.B) {
+		b.ReportAllocs()
+		for b.Loop() {
+			_ = ComputeVerdict(c)
+		}
+	})
+	b.Run("reused", func(b *testing.B) {
+		b.ReportAllocs()
+		for b.Loop() {
+			_ = VerdictFrom(c, cons)
+		}
+	})
+}
+
 // BenchmarkScaling documents the property that separates this parser from a
 // regex list: cost tracks input length, not the number of rules. Both cases
 // below run against the same full database.

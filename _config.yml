@@ -1,27 +1,38 @@
-title: UAX - Client intelligence for Go
-description: Client intelligence for Go. Not another User-Agent parser. uax reads the User-Agent and Client Hints and the fetch metadata around them, and tells you what is talking to your server.
+title: uax — client intelligence for Go
+description: >-
+  uax reads the User-Agent, the Client Hints and the fetch metadata around them
+  and reports what is talking to your server — with the confidence and the
+  evidence behind every field, and nothing where it cannot tell.
 theme: jekyll-theme-primer
 show_downloads: true
 github:
   is_project_page: true
   repository_url: https://github.com/bakhod1r/uax
 
-# Navigation configuration
+# The README is the site root; see its permalink. A separate landing page would
+# be a second copy of the same text, and the two drift.
 header_pages:
-  - README.md
   - CHANGELOG.md
   - CONTRIBUTING.md
   - SECURITY.md
   - NOTICE.md
+  - CODE_OF_CONDUCT.md
 
+# Jekyll would otherwise try to render the source tree as pages. Everything
+# below is code, fixtures or build machinery — none of it is documentation, and
+# testdata in particular holds deliberately malformed input that has no business
+# being served.
 exclude:
   - "*.go"
   - go.mod
   - go.sum
+  - go.work
   - Makefile
+  - .golangci.yml
   - benchmark/
   - cmd/
   - internal/
   - middleware/
+  - robots/
   - testdata/
   - uatest/

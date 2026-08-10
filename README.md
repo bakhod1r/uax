@@ -1,5 +1,9 @@
 ---
 title: uax
+# The site has no index.md on purpose: a landing page separate from the README
+# is a second copy of the same text, and the two drift. This makes the README
+# the root of the site instead.
+permalink: /
 ---
 
 # uax

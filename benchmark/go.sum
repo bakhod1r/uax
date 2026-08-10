@@ -1,9 +1,7 @@
 github.com/LumenResearch/uasurfer v0.0.0-20260805144106-c7341ba9111e h1:PoQIexHSPgGPlAIPCV97dYVcGTej61gO430bA96RJOk=
 github.com/LumenResearch/uasurfer v0.0.0-20260805144106-c7341ba9111e/go.mod h1:c4MgOTskHoKY+FGdotcggHXyWRSpzTIu23HAG+ElllE=
-github.com/bakhod1r/alx v0.1.0 h1:FkezRPuxQho//vtbVlp0kYBKzpGKqa4K5X493F77Dt4=
-github.com/bakhod1r/alx v0.1.0/go.mod h1:FBpDyjr7bAQUqtkPiipD/HVJE6Lor7sO7WD9jc778Fo=
-github.com/bakhod1r/devicex v0.1.2 h1:wtAblTecx31lKWl8iXUKVKH3EJyaVQNz5x/Nvtr+ln4=
-github.com/bakhod1r/devicex v0.1.2/go.mod h1:PJeMTr55ThTCaExQW+uaEYSE0k8/ZWhBvdKGrnPkT8w=
+github.com/bakhod1r/devicex v0.2.1 h1:yBn/wKBVz88AekX8sduShG0nuZ6Rpi/XAUv6Uk2jGE0=
+github.com/bakhod1r/devicex v0.2.1/go.mod h1:PJeMTr55ThTCaExQW+uaEYSE0k8/ZWhBvdKGrnPkT8w=
 github.com/hashicorp/golang-lru v1.0.2 h1:dV3g9Z/unq5DpblPpw+Oqcv4dU/1omnb4Ok8iPY6p1c=
 github.com/hashicorp/golang-lru v1.0.2/go.mod h1:iADmTwqILo4mZ8BN3D2Q6+9jd8WM5uGBxy+E8yxSoD4=
 github.com/mileusna/useragent v1.3.5 h1:SJM5NzBmh/hO+4LGeATKpaEX9+b4vcGg2qXGLiNGDws=
