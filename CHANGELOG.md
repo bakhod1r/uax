@@ -13,6 +13,30 @@ reproducible if you know which database produced it.
 
 ---
 
+## middleware/{gin,echo,fiber} v0.1.1 — security
+
+The library is unchanged and stays at v0.1.0. This release is the framework
+adapters only, and everyone using them should take it.
+
+The adapters pinned the framework versions they were written against, and those
+pulled in `golang.org/x/crypto v0.9.0` transitively — 30 advisories between
+them, 9 rated critical. Nothing in the adapters called the affected code, but a
+version in a `go.mod` is a version that ends up in a build.
+
+| | | |
+|---|---|---|
+| `gin` | v1.9.1 | v1.12.0 |
+| `echo` | v4.11.4 | v4.15.4 |
+| `fiber` | v2.52.0 | v2.52.14 |
+| `golang.org/x/crypto` | v0.9.0 | v0.54.0 |
+| `golang.org/x/net` | v0.10.0 | v0.57.0 |
+
+The upgrade surfaced a real gap in the Fiber adapter's tests: `fasthttp v1.73`
+enforces the `Host` header that HTTP/1.1 requires, and the fixtures did not set
+one because the parser never reads it. The adapter itself needed no change.
+
+---
+
 ## v0.1.0 — first release
 
 Initial public version.
