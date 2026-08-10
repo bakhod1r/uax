@@ -6,7 +6,25 @@ title: uax
 permalink: /
 ---
 
-# uax
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
+    <img src="assets/logo.png" alt="uax" width="340">
+  </picture>
+</div>
+
+<div align="center">
+
+[![CI](https://github.com/bakhod1r/uax/actions/workflows/ci.yml/badge.svg)](https://github.com/bakhod1r/uax/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/bakhod1r/uax.svg)](https://pkg.go.dev/github.com/bakhod1r/uax)
+[![Go Report Card](https://goreportcard.com/badge/github.com/bakhod1r/uax)](https://goreportcard.com/report/github.com/bakhod1r/uax)
+[![Release](https://img.shields.io/github/v/release/bakhod1r/uax?sort=semver)](https://github.com/bakhod1r/uax/releases)
+[![Zero dependencies](https://img.shields.io/badge/dependencies-none-success)](https://github.com/bakhod1r/uax/blob/main/go.mod)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+</div>
+
+<br/>
 
 Client intelligence for Go. Not another User-Agent parser: `uax` reads the
 User-Agent **and** Client Hints **and** the fetch metadata around them, and
@@ -50,6 +68,10 @@ and they go stale on a schedule a parser does not share.
 ```bash
 go get github.com/bakhod1r/uax
 ```
+
+**New here?** The [tutorial](TUTORIAL.md) walks through it in the order the
+questions come up — first parse, whole request, server, device names, bots,
+spoof detection, load. Every snippet in it is complete and runs.
 
 ## Use
 

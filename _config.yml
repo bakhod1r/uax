@@ -12,6 +12,7 @@ github:
 # The README is the site root; see its permalink. A separate landing page would
 # be a second copy of the same text, and the two drift.
 header_pages:
+  - TUTORIAL.md
   - CHANGELOG.md
   - CONTRIBUTING.md
   - SECURITY.md
