@@ -1,11 +1,3 @@
----
-title: uax
-# The site has no index.md on purpose: a landing page separate from the README
-# is a second copy of the same text, and the two drift. This makes the README
-# the root of the site instead.
-permalink: /
----
-
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
@@ -69,9 +61,17 @@ and they go stale on a schedule a parser does not share.
 go get github.com/bakhod1r/uax
 ```
 
-**New here?** The [tutorial](TUTORIAL.md) walks through it in the order the
-questions come up — first parse, whole request, server, device names, bots,
-spoof detection, load. Every snippet in it is complete and runs.
+> **New here?** The **[tutorial](TUTORIAL.md)** walks through it in the order the
+> questions come up — first parse, whole request, server, device names, bots,
+> spoof detection, load, testing. Every snippet in it is complete and runs.
+>
+> This file is the reference: what exists, and why it is the way it is.
+
+**Contents** · [Use](#use) · [What it finds](#what-it-finds) ·
+[Device names](#the-device-name-question) · [Spoof detection](#spoof-detection) ·
+[Performance](#performance) · [Design commitments](#design-commitments) ·
+[CLI](#cli) · [MCP server](#mcp-server) · [Testing](#testing-your-own-code) ·
+[Contributing a rule](#contributing-a-rule)
 
 ## Use
 
@@ -240,6 +240,40 @@ Against the ecosystem, same input, same machine:
 for like it wins on the work it skips. `mileusna` returns the model code but no
 brand; `uap-go` returns both but no marketing name, which no published Go
 parser resolves. Reproduce the table with `make compare`.
+
+### Where they actually differ
+
+On an ordinary Chrome string every parser above agrees, which makes a latency
+table look like the whole story. It is not. The strings that decide whether a
+result can be acted on are the awkward ones, and there the difference is not
+speed — it is **empty versus invented**:
+
+```
+curl/8.7.1
+  uax       kind=Tool, HTTP_CLIENT=curl, no browser, no OS
+  uasurfer  os=OSBot, device=DeviceComputer        <- neither is in the string
+  mssola    browser=curl                           <- curl is not a browser
+
+Mozilla/5.0 (Linux; Android 10; K) … Chrome/138  (frozen by UA Reduction)
+  uax       REDUCED, version withheld — it is a placeholder
+  mssola    os="Android 10"                        <- placeholder as fact
+  uap-go    device="K"                             <- placeholder as a device
+
+Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)
+  uax       BOT=ClaudeBot, category=AICrawler, provider=Anthropic
+  mssola    browser=Mozilla, bot=false             <- missed entirely
+
+Mozilla/5.0 (iPhone; …) Mobile/15E148 Instagram 320.0.0.0
+  uax       WEBVIEW=Instagram
+  mssola    browser=Safari, os="CPU iPhone OS 17_5 like Mac OS X"
+```
+
+`os=OSBot` and `device=K` are the failure mode this package exists to prevent:
+values that look like facts, and get stored, aggregated and reported as facts.
+
+Run it yourself — `go test -run TestTheHardCases -v ./benchmark`. Nothing there
+is scored, because "wrong" depends on what you needed: a library that never
+claimed to identify bots is not failing at it.
 
 Zero allocations is enforced, not observed: `TestAllocationBudget` fails the
 build if `ParseTo` ever allocates.
