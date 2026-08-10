@@ -28,6 +28,12 @@ func run(t *testing.T, p *uax.Parser, ua string, headers ...string) *uax.Client 
 	})
 
 	req := uatest.Request(ua, headers...)
+
+	// fasthttp rejects a request with no Host, as HTTP/1.1 requires. uatest
+	// builds fixtures for a parser that never looks at Host, so it does not set
+	// one; the transport underneath Fiber does care.
+	req.Host = "example.com"
+
 	resp, err := app.Test(req)
 	if err != nil {
 		t.Fatalf("app.Test: %v", err)
